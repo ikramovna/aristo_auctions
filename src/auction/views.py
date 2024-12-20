@@ -1,15 +1,38 @@
 from django.shortcuts import get_object_or_404
+from django.utils.timezone import localtime
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
-from rest_framework.generics import ListAPIView, ListCreateAPIView
+from rest_framework.exceptions import NotFound
+from rest_framework.generics import ListAPIView, ListCreateAPIView, CreateAPIView
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from src.auction.filters import AuctionFilter
 from src.auction.serializers import *
+
+
+class ContactAPIView(CreateAPIView):
+    """
+    API for submitting contact messages.
+    """
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Overriding the create method to customize the response message.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(
+            {"message": "Contact message submitted successfully!"},
+            status=status.HTTP_201_CREATED
+        )
 
 
 class AuctionFavoriteListCreateAPIView(ListCreateAPIView):
@@ -168,16 +191,81 @@ class AuctionDetailView(RetrieveAPIView):
     serializer_class = AuctionDetailSerializer
 
     def get_object(self):
+        # Retrieve the auction and update its status
         auction = get_object_or_404(Auction, id=self.kwargs['auction_id'])
         auction.update_status()
         return auction
 
     def retrieve(self, request, *args, **kwargs):
+        # Retrieve the auction instance
         instance = self.get_object()
+
+        # Increment view count
         instance.view += 1
         instance.save()
+
+        # Prepare bidding history
+        bids = instance.bids.all().order_by('-bid_time')
+        bidding_history = [
+            {
+                "user": bid.user.full_name,
+                "bid_amount": bid.bid_amount,
+                "bid_time": localtime(bid.bid_time).strftime('%Y-%m-%d, %H:%M')  # Format: date, hour:minute
+            } for bid in bids
+        ]
+
+        # Calculate time difference (Auction end time - current time)
+        time_diff = instance.auction_end_date - now()
+        days = time_diff.days
+        seconds = time_diff.total_seconds()
+        hours = int(seconds // 3600) % 24
+        minutes = int(seconds // 60) % 60
+        secs = int(seconds % 60)
+        time_remaining = f"{days}D:{hours:02}H:{minutes:02}M:{secs:02}S"
+
+        # Serialize the auction instance
         serializer = self.get_serializer(instance)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        auction_data = serializer.data
+
+        # Add bidding history and time remaining
+        auction_data['bidding_history'] = bidding_history
+        auction_data['time_remaining'] = time_remaining
+
+        # Add additional fields
+        additional_data = {
+            "lot_ref_num": instance.lot_ref_num,
+            "lot_num_two": instance.lot_num_two,
+            "piece_title": instance.piece_title,
+            "price": instance.price,
+            "dimensions": instance.dimensions,
+            "framed_text": instance.framed_text,
+            "body_style": instance.body_style,
+            "medium": instance.medium,
+            "color_scheme": instance.color_scheme,
+            "condition": instance.condition,
+            "warranty": instance.warranty,
+            "date_prod": instance.date_prod,
+            "artist_name": instance.artist_name,
+            "artist_birth_date": instance.artist_birth_date,
+            "artist_death_date": instance.artist_death_date,
+            "artist_address": instance.artist_address,
+            "artist_image": instance.artist_image.url if instance.artist_image else None,
+            "artist_bio": instance.artist_bio,
+        }
+        auction_data['additional_details'] = additional_data
+
+        # Fetch best related auctions
+        related_auctions = Auction.objects.filter(
+            category_id=instance.category_id,
+            auction_end_date__gt=now()
+        ).exclude(id=instance.id)[:5]
+
+        # Serialize related auctions
+        related_serializer = RelatedAuctionSerializer(related_auctions, many=True)
+        auction_data['best_related_auctions'] = related_serializer.data
+
+        return Response(auction_data, status=status.HTTP_200_OK)
+
 
 
 class AuctionListView(ListAPIView):
@@ -231,3 +319,78 @@ class SearchAuctionByNameView(ListAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class TopAuctionsAPIView(ListAPIView):
+    """
+    API endpoint to list top auctions where the view count is higher than 30.
+    """
+    serializer_class = AuctionTopSerilizer
+
+    def get_queryset(self):
+        queryset = Auction.objects.filter(view__gt=30, auction_end_date__gt=now())
+        status = self.request.query_params.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+        return queryset
+
+
+class BestArtistAPIView(APIView):
+    """
+    API to fetch the artist with the highest number of auctions.
+    """
+
+    def get(self, request, *args, **kwargs):
+        # Aggregate auctions by artist and group them
+        best_artist = (
+            Auction.objects.values(
+                'artist_name', 'artist_birth_date', 'artist_death_date', 'artist_image'
+            )
+            .annotate(auction_count=Count('id'))  # Group by artist and count auctions
+            .order_by('-auction_count')  # Order by the highest number of auctions
+            .first()  # Fetch the top artist
+        )
+
+        if not best_artist:
+            return Response({"message": "No artists found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Prepare response data
+        data = {
+            "artist_name": best_artist['artist_name'],
+            "artist_birth_date": best_artist['artist_birth_date'],
+            "artist_death_date": best_artist['artist_death_date'],
+            "artist_image": request.build_absolute_uri(best_artist['artist_image']) if best_artist['artist_image'] else None,
+            "auction_count": best_artist['auction_count'],
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
+
+
+
+#  Bid
+
+class PlaceBidAPIView(CreateAPIView):
+    serializer_class = BidSerializer
+    permission_classes = [IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        auction_id = self.kwargs.get('auction_id')
+        auction = Auction.objects.filter(id=auction_id, auction_end_date__gt=now()).first()
+
+        if not auction:
+            return Response({"error": "Auction does not exist or has ended."}, status=status.HTTP_400_BAD_REQUEST)
+
+        bid_amount = request.data.get('bid_amount')
+        if not bid_amount or float(bid_amount) <= (auction.current_bid or auction.price):
+            return Response({"error": "Bid amount must be higher than the current bid or starting price."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create bid
+        data = request.data.copy()
+        data['auction'] = auction_id  # Add auction ID to the data
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # Update the auction's current bid
+        auction.current_bid = bid_amount
+        auction.save()
+
+        return Response({"message": "Bid placed successfully!", "bid": serializer.data}, status=status.HTTP_201_CREATED)

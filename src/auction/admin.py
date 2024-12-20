@@ -57,9 +57,9 @@ class AuctionAdmin(ImportExportModelAdmin):
 
 @admin.register(Bid)
 class BidAdmin(ImportExportModelAdmin):
-    list_display = ("id", "auction", "user", "bid_amount", "timestamp")
+    list_display = ("id", "auction", "user", "bid_amount", "bid_time")
     list_filter = ("auction__name", "user__username")
-    ordering = ("-timestamp",)
+    ordering = ("-bid_time",)
     search_fields = ("auction__name", "user__username")
 
 
@@ -79,3 +79,10 @@ class AboutModelAdmin(ImportExportModelAdmin):
 class AboutImageModelAdmin(ImportExportModelAdmin):
     list_display = ("id", "image")
     ordering = ("id",)
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'created_at')  #
+    search_fields = ('name', 'email')
+    ordering = ('-created_at',)

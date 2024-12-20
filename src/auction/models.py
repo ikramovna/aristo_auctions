@@ -4,6 +4,16 @@ from django.utils.timezone import now
 from src.users.models import User
 
 
+class Contact(Model):
+    name = CharField(max_length=255)
+    email = EmailField()
+    message = TextField()
+    created_at = DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} - {self.email}"
+
+
 class AuctionFavorite(Model):
     auction = ForeignKey('Auction', on_delete=CASCADE, related_name='favorites')
     user = ForeignKey('users.User', on_delete=CASCADE, related_name='auction_favorites')
@@ -139,6 +149,7 @@ class Auction(Model):
     lot_num_two = CharField(max_length=2)
     piece_title = CharField(max_length=255)
     price = IntegerField()
+    current_bid = DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     dimensions = CharField(max_length=255, blank=True, null=True)
     framed_text = TextField(blank=True, null=True)
     description = TextField(blank=True, null=True)
@@ -207,12 +218,9 @@ def __str__(self):
 
 class Bid(Model):
     auction = ForeignKey(Auction, on_delete=CASCADE, related_name='bids')
-    user = ForeignKey(User, on_delete=CASCADE, related_name='user_bids')
+    user = ForeignKey(User, on_delete=CASCADE, related_name='bids')
     bid_amount = DecimalField(max_digits=10, decimal_places=2)
-    timestamp = DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-timestamp']
+    bid_time = DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.bid_amount} on {self.auction.name}"
+        return f"{self.user.username} - {self.bid_amount}"

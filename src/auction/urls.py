@@ -15,5 +15,9 @@ urlpatterns = [
     path('filter', FilteredAuctionListView.as_view()),
     path('search', SearchAuctionByNameView.as_view()),
     path('favorites', AuctionFavoriteListCreateAPIView.as_view()),
+    path('top', TopAuctionsAPIView.as_view()),
+    path('contact', ContactAPIView.as_view()),
+    path('bid', PlaceBidAPIView.as_view()),
+    path('best-artist', BestArtistAPIView.as_view()),
 
 ]

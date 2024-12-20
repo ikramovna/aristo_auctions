@@ -1,8 +1,14 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, HiddenField, CurrentUserDefault, \
-    ValidationError
+    ValidationError, Serializer
 
 from src.auction.models import *
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime
+
+
+class ContactSerializer(ModelSerializer):
+    class Meta:
+        model = Contact
+        fields = ['id', 'name', 'email', 'message']
 
 
 class AuctionFavoriteSerializer(ModelSerializer):
@@ -84,7 +90,9 @@ class CategoryModelSerializer(ModelSerializer):
 class AuctionDetailSerializer(ModelSerializer):
     class Meta:
         model = Auction
-        fields = '__all__'
+        fields = (
+            'id', 'name', 'location', 'current_bid', 'description', 'status', 'image1', 'image2', 'image3', 'image4',
+            'video', 'view')
 
 
 class AuctionListSerializer(ModelSerializer):
@@ -105,3 +113,44 @@ class AuctionListSerializer(ModelSerializer):
 
     def get_owner_image(self, obj):
         return obj.owner.image.url if obj.owner and obj.owner.image else None
+
+
+class AuctionTopSerilizer(ModelSerializer):
+    class Meta:
+        model = Auction
+        fields = ['id', 'image1', 'image2', 'name', 'price', 'status', 'view']
+
+
+class RelatedAuctionSerializer(ModelSerializer):
+    auction_end_date = SerializerMethodField()
+
+    class Meta:
+        model = Auction
+        fields = ['id', 'image1', 'name', 'lot_ref_num', 'price', 'auction_end_date']
+
+    def get_auction_end_date(self, obj):
+        return localtime(obj.auction_end_date).strftime('%Y-%m-%d, %H:%M')
+
+
+class BestArtistSerializer(Serializer):
+    artist_name = CharField()
+    artist_birth_date = DateField()
+    artist_death_date = DateField()
+    artist_image = ImageField()
+    auction_count = IntegerField()
+
+
+# Bid
+
+class AuctionSerializer(ModelSerializer):
+    class Meta:
+        model = Auction
+        fields = ['id', 'name', 'description', 'price', 'current_bid', 'image1', 'auction_end_date']
+
+
+class BidSerializer(ModelSerializer):
+    user = HiddenField(default=CurrentUserDefault())
+
+    class Meta:
+        model = Bid
+        fields = ['id', 'auction', 'user', 'bid_amount', 'bid_time']

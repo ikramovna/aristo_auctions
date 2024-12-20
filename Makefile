@@ -13,7 +13,7 @@ install-req:
 static:
 	python3 manage.py collectstatic
 
-# top action api,  best artist, similar auctions,  contact, bid, best_sellers.
+#   best artist,  bid, best_sellers,
 # https://demo-egenslab.b-cdn.net/html/bidgen/preview/index-art-dark.html
 # https://drawsql.app/teams/python-9/diagrams/aristo-auction
 
