@@ -1,3 +1,4 @@
+from ckeditor.fields import RichTextField
 from django.db.models import *
 from django.utils.timezone import now
 
@@ -53,7 +54,7 @@ class AboutImage(Model):
 
 class About(Model):
     title = CharField(max_length=255)
-    description = TextField()
+    description = RichTextField()
     image = ManyToManyField(AboutImage, blank=True)
 
     class Meta:

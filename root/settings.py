@@ -26,6 +26,7 @@ THIRD_PARTY_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'mptt',
+    'ckeditor',
 ]
 
 INSTALLED_APPS = [
@@ -224,4 +225,13 @@ CACHES = {
         }
     }
 }
+
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': 'auto',
+    },
+}
+
 
