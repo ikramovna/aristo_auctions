@@ -1,0 +1,36 @@
+version: "3.9"
+services:
+  django:
+    build: .
+    container_name: django
+    command: gunicorn --bind 0.0.0.0:8000 root.wsgi
+    expose:
+      - "8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+    depends_on:
+      - db
+  db:
+    image: postgres:14.0-alpine
+    container_name: postgres_db
+    environment:
+      - POSTGRES_DB=uzinterfax
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/app/static
+    depends_on:
+      - django
+volumes:
+  postgres_data:
+  static_volume:
+
+
