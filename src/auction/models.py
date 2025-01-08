@@ -169,7 +169,7 @@ class Auction(Model):
     image2 = ImageField(upload_to='auction_images/', blank=True, null=True)
     image3 = ImageField(upload_to='auction_images/', blank=True, null=True)
     image4 = ImageField(upload_to='auction_images/', blank=True, null=True)
-    video = ImageField(upload_to='auction_videos/', blank=True, null=True)
+    video = CharField(max_length=255, blank=True, null=True)
 
     category_id = ForeignKey('Category', CASCADE, related_name='category')
     owner = ForeignKey('users.User', CASCADE, related_name='auctions')

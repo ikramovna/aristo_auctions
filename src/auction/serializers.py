@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, HiddenField, CurrentUserDefault, \
     ValidationError, Serializer
 
@@ -106,13 +108,16 @@ class AuctionListSerializer(ModelSerializer):
 
     def get_remaining_time(self, obj):
         remaining_time = obj.get_remaining_time()
-        return f"{remaining_time['days']}D : {remaining_time['hours']}H : {remaining_time['minutes']}M : {remaining_time['seconds']}S"
+        now_time = now()
+        end_time = now_time + timedelta(days=remaining_time['days'], hours=remaining_time['hours'],
+                                        minutes=remaining_time['minutes'], seconds=remaining_time['seconds'])
+        return end_time.strftime('%Y-%m-%dT%H:%M:%S')
 
     def get_owner_full_name(self, obj):
-        return obj.owner.full_name if obj.owner else None
+        return obj.artist_name
 
     def get_owner_image(self, obj):
-        return obj.owner.image.url if obj.owner and obj.owner.image else None
+        return obj.artist_image.url if obj.artist_image else None
 
 
 class AuctionTopSerilizer(ModelSerializer):
@@ -129,7 +134,7 @@ class RelatedAuctionSerializer(ModelSerializer):
         fields = ['id', 'image1', 'name', 'lot_ref_num', 'price', 'auction_end_date']
 
     def get_auction_end_date(self, obj):
-        return localtime(obj.auction_end_date).strftime('%Y-%m-%d, %H:%M')
+        return localtime(obj.auction_end_date).strftime('%Y-%m-%dT%H:%M:%S')
 
 
 class BestArtistSerializer(Serializer):

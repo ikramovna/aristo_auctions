@@ -4,23 +4,23 @@ from import_export.admin import ImportExportModelAdmin
 from src.auction.models import *
 
 
-@admin.register(Region)
-class RegionModelAdmin(ImportExportModelAdmin):
-    list_display = ("id", "name")
-    filter = ("name",)
-    ordering = ("id",)
-
-
-@admin.register(District)
-class DistrictModelAdmin(ImportExportModelAdmin):
-    list_display = ("id", "name", "region")
-    ordering = ("id",)
-
-
-@admin.register(Mahalla)
-class MahallaModelAdmin(ImportExportModelAdmin):
-    list_display = ("id", "name", "district")
-    ordering = ("id",)
+# @admin.register(Region)
+# class RegionModelAdmin(ImportExportModelAdmin):
+#     list_display = ("id", "name")
+#     filter = ("name",)
+#     ordering = ("id",)
+#
+#
+# @admin.register(District)
+# class DistrictModelAdmin(ImportExportModelAdmin):
+#     list_display = ("id", "name", "region")
+#     ordering = ("id",)
+#
+#
+# @admin.register(Mahalla)
+# class MahallaModelAdmin(ImportExportModelAdmin):
+#     list_display = ("id", "name", "district")
+#     ordering = ("id",)
 
 
 @admin.register(Category)

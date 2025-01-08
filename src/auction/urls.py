@@ -3,9 +3,9 @@ from django.urls import path
 from src.auction.views import *
 
 urlpatterns = [
-    path("region", RegionListAPIView.as_view()),
-    path("district", DistrictListAPIView.as_view()),
-    path("mahalla", MahallaListAPIView.as_view()),
+    # path("region", RegionListAPIView.as_view()),
+    # path("district", DistrictListAPIView.as_view()),
+    # path("mahalla", MahallaListAPIView.as_view()),
     path("faq", FaqAPIView.as_view()),
     path("about", AboutAPIView.as_view()),
     path("category", CategoryListCreateAPIView.as_view()),
