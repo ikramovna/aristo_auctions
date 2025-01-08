@@ -232,7 +232,7 @@ class AuctionDetailView(RetrieveAPIView):
         auction_data['time_remaining'] = time_remaining
 
         # Add additional fields
-        additional_data = {
+        additional_data = [{
             "lot_ref_num": instance.lot_ref_num,
             "lot_num_two": instance.lot_num_two,
             "piece_title": instance.piece_title,
@@ -251,7 +251,7 @@ class AuctionDetailView(RetrieveAPIView):
             "artist_address": instance.artist_address,
             "artist_image": instance.artist_image.url if instance.artist_image else None,
             "artist_bio": instance.artist_bio,
-        }
+        }]
         auction_data['additional_details'] = additional_data
 
         # Fetch best related auctions

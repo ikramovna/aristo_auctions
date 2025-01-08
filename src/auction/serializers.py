@@ -90,12 +90,24 @@ class CategoryModelSerializer(ModelSerializer):
 
 
 class AuctionDetailSerializer(ModelSerializer):
+    images = SerializerMethodField()
+
     class Meta:
         model = Auction
         fields = (
-            'id', 'name', 'location', 'current_bid', 'description', 'status', 'image1', 'image2', 'image3', 'image4',
-            'video', 'view')
+            'id', 'name', 'location', 'current_bid', 'description', 'status', 'images', 'video', 'view')
 
+    def get_images(self, obj):
+        images = []
+        if obj.image1:
+            images.append(obj.image1.url)
+        if obj.image2:
+            images.append(obj.image2.url)
+        if obj.image3:
+            images.append(obj.image3.url)
+        if obj.image4:
+            images.append(obj.image4.url)
+        return images
 
 class AuctionListSerializer(ModelSerializer):
     remaining_time = SerializerMethodField()
@@ -104,7 +116,7 @@ class AuctionListSerializer(ModelSerializer):
 
     class Meta:
         model = Auction
-        fields = ['id', 'image1', 'name', 'price', 'remaining_time', 'owner_full_name', 'owner_image']
+        fields = ['id', 'image1', 'name', 'price', 'remaining_time', 'owner_full_name', 'owner_image', 'current_bid']
 
     def get_remaining_time(self, obj):
         remaining_time = obj.get_remaining_time()
