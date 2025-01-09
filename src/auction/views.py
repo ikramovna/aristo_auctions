@@ -216,12 +216,8 @@ class AuctionDetailView(RetrieveAPIView):
 
         # Calculate time difference (Auction end time - current time)
         time_diff = instance.auction_end_date - now()
-        days = time_diff.days
-        seconds = time_diff.total_seconds()
-        hours = int(seconds // 3600) % 24
-        minutes = int(seconds // 60) % 60
-        secs = int(seconds % 60)
-        time_remaining = f"{days}D:{hours:02}H:{minutes:02}M:{secs:02}S"
+        end_time = now() + timedelta(days=time_diff.days, seconds=time_diff.seconds)
+        time_remaining = end_time.strftime('%Y-%m-%dT%H:%M:%S')
 
         # Serialize the auction instance
         serializer = self.get_serializer(instance)
@@ -249,7 +245,7 @@ class AuctionDetailView(RetrieveAPIView):
             "artist_birth_date": instance.artist_birth_date,
             "artist_death_date": instance.artist_death_date,
             "artist_address": instance.artist_address,
-            "artist_image": instance.artist_image.url if instance.artist_image else None,
+            "artist_image": f"http://aristoback.ikramovna.me{instance.artist_image.url}" if instance.artist_image else None,
             "artist_bio": instance.artist_bio,
         }]
         auction_data['additional_details'] = additional_data

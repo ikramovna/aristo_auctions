@@ -98,15 +98,16 @@ class AuctionDetailSerializer(ModelSerializer):
             'id', 'name', 'location', 'current_bid', 'description', 'status', 'images', 'video', 'view')
 
     def get_images(self, obj):
+        base_url = "http://aristoback.ikramovna.me"
         images = []
         if obj.image1:
-            images.append(obj.image1.url)
+            images.append(f"{base_url}{obj.image1.url}")
         if obj.image2:
-            images.append(obj.image2.url)
+            images.append(f"{base_url}{obj.image2.url}")
         if obj.image3:
-            images.append(obj.image3.url)
+            images.append(f"{base_url}{obj.image3.url}")
         if obj.image4:
-            images.append(obj.image4.url)
+            images.append(f"{base_url}{obj.image4.url}")
         return images
 
 class AuctionListSerializer(ModelSerializer):
