@@ -257,10 +257,10 @@ JAZZMIN_SETTINGS = {
     "site_brand": "Fotheby’s Auction",
 
     # Logo to use for your site (must be available in static files)
-    "site_logo": "static/bidgen-logo.svg",
+    "site_logo": "bidgen-logo.svg",
 
     # Favicon (use a hammer icon or related graphic)
-    "site_icon": "static/bidgen-logoo.svg",
+    "site_icon": "bidgen-logoo.svg",
 
     # Welcome text on the login screen
     "welcome_sign": "Welcome to Fotheby’s Auction Admin Panel",
@@ -293,15 +293,7 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
     "order_with_respect_to": ["auth", "auction"],
 
-    # Custom links for app groups
-    "custom_links": {
-        "auction": [{
-            "name": "Manage Bids",
-            "url": "manage_bids",
-            "icon": "fas fa-gavel",
-            "permissions": ["auction.view_auction"]
-        }]
-    },
+
 
     # Icons for apps and models
     "icons": {

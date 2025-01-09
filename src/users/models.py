@@ -46,6 +46,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['full_name', 'email']
 
+    def get_full_name(self):
+        return self.full_name
+
 
 def getKey(key):
     return cache.get(key)
