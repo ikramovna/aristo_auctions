@@ -90,13 +90,11 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    address = AddressSerializer(read_only=True)
-
     # services = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'full_name', 'email', 'phone', 'username', 'bio', 'address', 'image']
+        fields = ['id', 'full_name', 'email', 'phone', 'username', 'bio', 'image']
 
     # def get_services(self, user):
     #     services = user.services.all()
@@ -109,7 +107,7 @@ class UserModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'phone',  'address')
+        fields = ('id', 'phone', 'address')
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')
