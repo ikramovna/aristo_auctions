@@ -40,7 +40,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         text_content = strip_tags(html_content)
         print(getKey(key=attrs['email']))
 
-        from_email = f"Aura Team <{settings.EMAIL_HOST_USER}>"
+        from_email = f" Fotheby Auction <{settings.EMAIL_HOST_USER}>"
         email = EmailMultiAlternatives(
             subject=subject,
             body=text_content,

@@ -5,9 +5,9 @@ from drf_yasg import openapi
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="ARISTO AUCTION API",
+        title="FOTHEBY'S AUCTION API",
         default_version='v1',
-        description="**Created by Zokirjonova Muslima 24835737**\n\n**ARISTO AUCTION API Documentation**\n\n**Version 1.0**",
+        description="**Created by Zokirjonova Muslima 24835737**\n\n**FOTHEBY'S AUCTION API Documentation**\n\n**Version 1.0**",
         terms_of_service="https://www.google.com/policies/terms/",
         contact=openapi.Contact(email="contact@snippets.local"),
         license=openapi.License(name="Zokirjonova Muslima 24835737"),

@@ -82,7 +82,7 @@ class ResetPasswordView(CreateAPIView):
             html_content = render_to_string('forget_password.html', {'activation_code': activation_code})
             text_content = strip_tags(html_content)
 
-            from_email = f"Aura Team <{settings.EMAIL_HOST_USER}>"
+            from_email = f"Fotheby Auction <{settings.EMAIL_HOST_USER}>"
             email = EmailMultiAlternatives(
                 subject=subject,
                 body=text_content,
