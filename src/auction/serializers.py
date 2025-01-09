@@ -115,6 +115,7 @@ class AuctionDetailSerializer(ModelSerializer):
         bids = obj.bids.all().order_by('-bid_time')
         return [
             {
+                "id": bid.id,
                 "user": bid.user.full_name,
                 "bid_amount": bid.bid_amount,
                 "bid_time": localtime(bid.bid_time).strftime('%Y-%m-%d, %H:%M')

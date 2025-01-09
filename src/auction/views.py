@@ -208,6 +208,7 @@ class AuctionDetailView(RetrieveAPIView):
         bids = instance.bids.all().order_by('-bid_time')
         bidding_history = [
             {
+                "id": bid.id,
                 "user": bid.user.full_name,
                 "bid_amount": bid.bid_amount,
                 "bid_time": localtime(bid.bid_time).strftime('%Y-%m-%d, %H:%M')  # Format: date, hour:minute
@@ -258,7 +259,6 @@ class AuctionDetailView(RetrieveAPIView):
         auction_data['best_related_auctions'] = related_serializer.data
 
         return Response(auction_data, status=status.HTTP_200_OK)
-
 
 
 class AuctionListView(ListAPIView):
@@ -350,12 +350,12 @@ class BestArtistAPIView(APIView):
             "artist_name": best_artist['artist_name'],
             "artist_birth_date": best_artist['artist_birth_date'],
             "artist_death_date": best_artist['artist_death_date'],
-            "artist_image": request.build_absolute_uri(best_artist['artist_image']) if best_artist['artist_image'] else None,
+            "artist_image": request.build_absolute_uri(best_artist['artist_image']) if best_artist[
+                'artist_image'] else None,
             "auction_count": best_artist['auction_count'],
         }
 
         return Response(data, status=status.HTTP_200_OK)
-
 
 
 #  Bid
@@ -372,8 +372,15 @@ class PlaceBidAPIView(CreateAPIView):
             return Response({"error": "Auction does not exist or has ended."}, status=status.HTTP_400_BAD_REQUEST)
 
         bid_amount = request.data.get('bid_amount')
-        if not bid_amount or float(bid_amount) <= (auction.current_bid or auction.price):
-            return Response({"error": "Bid amount must be higher than the current bid or starting price."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            bid_amount = float(bid_amount)
+        except (TypeError, ValueError):
+            return Response({"error": "Invalid bid amount."}, status=status.HTTP_400_BAD_REQUEST)
+
+        current_bid = auction.current_bid if auction.current_bid is not None else auction.price
+        if bid_amount <= current_bid:
+            return Response({"error": "Bid amount must be higher than the current bid or starting price."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         # Create bid
         data = request.data.copy()
