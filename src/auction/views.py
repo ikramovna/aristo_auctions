@@ -245,7 +245,7 @@ class AuctionDetailView(RetrieveAPIView):
             "artist_birth_date": instance.artist_birth_date,
             "artist_death_date": instance.artist_death_date,
             "artist_address": instance.artist_address,
-            "artist_image": f"http://aristoback.ikramovna.me{instance.artist_image.url}" if instance.artist_image else None,
+            "artist_image": f"https://aristoback.ikramovna.me{instance.artist_image.url}" if instance.artist_image else None,
             "artist_bio": instance.artist_bio,
         }]
         auction_data['additional_details'] = additional_data
