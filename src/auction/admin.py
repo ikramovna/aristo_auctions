@@ -134,3 +134,9 @@ class ContactAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'created_at')  #
     search_fields = ('name', 'email')
     ordering = ('-created_at',)
+
+@admin.register(AuctionFavorite)
+class AuctionFavoriteAdmin(admin.ModelAdmin):
+    list_display = ('auction', 'user', 'created_at')
+    search_fields = ('auction__name', 'user__full_name')
+    ordering = ('-created_at',)
