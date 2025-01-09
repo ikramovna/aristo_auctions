@@ -30,6 +30,7 @@ THIRD_PARTY_APPS = [
 ]
 
 INSTALLED_APPS = [
+                     'jazzmin',
                      'django.contrib.admin',
                      'django.contrib.auth',
                      'django.contrib.contenttypes',
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
                  ] + MY_APPS + THIRD_PARTY_APPS
 
 MIDDLEWARE = [
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -50,6 +52,15 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'root.urls'
+
+
+LANGUAGES = [
+    ('en', 'English'),
+    ('fr', 'French'),
+    ('es', 'Spanish'),
+]
+
+
 
 TEMPLATES = [
     {
@@ -231,6 +242,110 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
         'height': 300,
         'width': 'auto',
+    },
+}
+
+
+JAZZMIN_SETTINGS = {
+    # Title of the window (browser tab)
+    "site_title": "Fotheby’s Auction",
+
+    # Title on the login screen
+    "site_header": "Fotheby’s Auction",
+
+    # Title on the brand (top-left corner)
+    "site_brand": "Fotheby’s Auction",
+
+    # Logo to use for your site (must be available in static files)
+    "site_logo": "static/bidgen-logo.svg",
+
+    # Favicon (use a hammer icon or related graphic)
+    "site_icon": "static/bidgen-logoo.svg",
+
+    # Welcome text on the login screen
+    "welcome_sign": "Welcome to Fotheby’s Auction Admin Panel",
+
+    # Copyright text for the footer
+    "copyright": "© 2025 Fotheby’s Auction. All rights reserved.",
+
+    # Search bar configuration
+    "search_model": ["auth.User", "auction.Auction"],
+
+    # Avatar field on user model
+    "user_avatar": "profile_picture",
+
+    ############
+    # Top Menu #
+    ############
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "Support", "url": "https://fothebys.com/support", "new_window": True},
+        {"model": "auth.User"},
+        {"app": "auction"},
+    ],
+
+    #############
+    # Side Menu #
+    #############
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    "hide_apps": [],
+    "hide_models": [],
+    "order_with_respect_to": ["auth", "auction"],
+
+    # Custom links for app groups
+    "custom_links": {
+        "auction": [{
+            "name": "Manage Bids",
+            "url": "manage_bids",
+            "icon": "fas fa-gavel",
+            "permissions": ["auction.view_auction"]
+        }]
+    },
+
+    # Icons for apps and models
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "auction": "fas fa-gavel",
+        "auction.Auction": "fas fa-hammer",
+    },
+
+    #################
+    # Related Modal #
+    #################
+    "related_modal_active": True,
+
+    #############
+    # UI Tweaks #
+    #############
+    "custom_css": "/static/css/fothebys_custom.css",
+    "custom_js": "/static/js/fothebys_custom.js",
+    "use_google_fonts_cdn": True,
+    "show_ui_builder": False,
+
+    ###############
+    # Change View #
+    ###############
+    "changeform_format": "horizontal_tabs",
+    "changeform_format_overrides": {"auth.user": "collapsible"},
+    "language_chooser": True,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    # Apply a custom theme that matches Fotheby's branding
+    "theme": "darkly",  # Suitable for luxury and premium branding
+    "navbar": "navbar-dark bg-dark",  # Dark navigation bar
+    "sidebar": "sidebar-dark-primary",  # Dark sidebar with primary color
+    "brand_colour": "navbar-dark bg-danger",  # Red theme for the brand area
+    "accent": "accent-danger",  # Accent color for buttons and links
+    "dark_mode_theme": "slate",  # Optional dark mode theme
+    "navbar_fixed": True,
+    "sidebar_fixed": True,
+    "button_classes": {
+        "primary": "btn btn-danger",  # Change default button colors to match branding
+        "secondary": "btn btn-light",
     },
 }
 

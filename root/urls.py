@@ -13,6 +13,6 @@ urlpatterns = [
     path('api/v1/users/', include('src.users.urls')),
     path('api/v1/auction/', include('src.auction.urls')),
 
-
+    path('set-language/', include('django.conf.urls.i18n')),
 ] + swagger_urls + static(MEDIA_URL, document_root=MEDIA_ROOT) + static(STATIC_URL,document_root=STATIC_ROOT)
 

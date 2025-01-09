@@ -1,4 +1,3 @@
-from ckeditor.fields import RichTextField
 from django.db.models import *
 from django.utils.timezone import now
 
@@ -54,7 +53,7 @@ class AboutImage(Model):
 
 class About(Model):
     title = CharField(max_length=255)
-    description = RichTextField()
+    description = CharField(null=True, blank=True, max_length=255)
     image = ManyToManyField(AboutImage, blank=True)
 
     class Meta:
@@ -224,4 +223,4 @@ class Bid(Model):
     bid_time = DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.bid_amount}"
+        return f"{self.user.username} - {self.bid_amount:.2f}"
