@@ -205,15 +205,7 @@ class AuctionDetailView(RetrieveAPIView):
         instance.save()
 
         # Prepare bidding history
-        bids = instance.bids.all().order_by('-bid_time')
-        bidding_history = [
-            {
-                "id": bid.id,
-                "user": bid.user.full_name,
-                "bid_amount": bid.bid_amount,
-                "bid_time": localtime(bid.bid_time).strftime('%Y-%m-%d, %H:%M')  # Format: date, hour:minute
-            } for bid in bids
-        ]
+
 
         # Calculate time difference (Auction end time - current time)
         time_diff = instance.auction_end_date - now()
@@ -225,7 +217,6 @@ class AuctionDetailView(RetrieveAPIView):
         auction_data = serializer.data
 
         # Add bidding history and time remaining
-        auction_data['bidding_history'] = bidding_history
         auction_data['time_remaining'] = time_remaining
 
         # Add additional fields
