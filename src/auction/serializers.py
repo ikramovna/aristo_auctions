@@ -91,11 +91,12 @@ class CategoryModelSerializer(ModelSerializer):
 
 class AuctionDetailSerializer(ModelSerializer):
     images = SerializerMethodField()
+    bid_history = SerializerMethodField()
 
     class Meta:
         model = Auction
         fields = (
-            'id', 'name', 'location', 'current_bid', 'description', 'status', 'images', 'video', 'view')
+            'id', 'name', 'location', 'current_bid', 'description', 'status', 'images', 'video', 'view', 'bid_history')
 
     def get_images(self, obj):
         base_url = "http://aristoback.ikramovna.me"
@@ -109,6 +110,16 @@ class AuctionDetailSerializer(ModelSerializer):
         if obj.image4:
             images.append(f"{base_url}{obj.image4.url}")
         return images
+
+    def get_bid_history(self, obj):
+        bids = obj.bids.all().order_by('-bid_time')
+        return [
+            {
+                "user": bid.user.full_name,
+                "bid_amount": bid.bid_amount,
+                "bid_time": localtime(bid.bid_time).strftime('%Y-%m-%d, %H:%M')
+            } for bid in bids
+        ]
 
 class AuctionListSerializer(ModelSerializer):
     remaining_time = SerializerMethodField()
@@ -141,13 +152,19 @@ class AuctionTopSerilizer(ModelSerializer):
 
 class RelatedAuctionSerializer(ModelSerializer):
     auction_end_date = SerializerMethodField()
+    image1 = SerializerMethodField()
 
     class Meta:
         model = Auction
-        fields = ['id', 'image1', 'name', 'lot_ref_num', 'price', 'auction_end_date']
+        fields = ['id', 'image1', 'name', 'lot_ref_num', 'price', 'auction_end_date', 'current_bid']
 
     def get_auction_end_date(self, obj):
         return localtime(obj.auction_end_date).strftime('%Y-%m-%dT%H:%M:%S')
+
+    def get_image1(self, obj):
+        if obj.image1:
+            return f"https://aristoback.ikramovna.me{obj.image1.url}"
+        return None
 
 
 class BestArtistSerializer(Serializer):
