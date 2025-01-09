@@ -117,6 +117,7 @@ class AuctionDetailSerializer(ModelSerializer):
             {
                 "id": bid.id,
                 "user": bid.user.full_name,
+                "user_image": bid.user.image.url if bid.user.image else None,
                 "bid_time": f"Bid {timesince(bid.bid_time)} ago for {bid.bid_amount} $"
             } for bid in bids
         ]
