@@ -1,5 +1,5 @@
 from datetime import timedelta
-
+from django.utils.timesince import timesince
 from rest_framework.serializers import ModelSerializer, SerializerMethodField, HiddenField, CurrentUserDefault, \
     ValidationError, Serializer
 
@@ -117,8 +117,7 @@ class AuctionDetailSerializer(ModelSerializer):
             {
                 "id": bid.id,
                 "user": bid.user.full_name,
-                "bid_amount": bid.bid_amount,
-                "bid_time": localtime(bid.bid_time).strftime('%Y-%m-%d, %H:%M')
+                "bid_time": f"Bid {timesince(bid.bid_time)} ago for {bid.bid_amount} $"
             } for bid in bids
         ]
 
