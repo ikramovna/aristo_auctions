@@ -113,7 +113,7 @@ class AuctionDetailSerializer(ModelSerializer):
 
     def get_bid_history(self, obj):
         base_url = "https://aristoback.ikramovna.me"
-        bids = obj.bids.all().order_by('-bid_time')
+        bids = obj.bids.all().order_by('-bid_amount')
         return [
             {
                 "id": bid.id,
@@ -143,7 +143,8 @@ class AuctionListSerializer(ModelSerializer):
         return obj.artist_name
 
     def get_owner_image(self, obj):
-        return obj.artist_image.url if obj.artist_image else None
+        base_url = "https://aristoback.ikramovna.me"
+        return f"{base_url}{obj.artist_image.url}" if obj.artist_image else None
 
 
 class AuctionTopSerilizer(ModelSerializer):

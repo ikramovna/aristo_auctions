@@ -46,17 +46,17 @@ class AuctionAdmin(ImportExportModelAdmin):
     list_filter = (
         "status",
         "auction_period",
-        "category_id__name",  # Filter by category name
+        "category_id__name",
         "artist_name",
         "auction_start_date",
         "auction_end_date",
     )
     ordering = ("-auction_start_date", "name", "price")
     search_fields = ("name", "owner__username", "category_id__name", "artist_name", "description")
-    date_hierarchy = "auction_start_date"  # Adds a date-based navigation bar
-    list_editable = ("status", "price")  # Makes these fields editable directly in the list view
-    readonly_fields = ("view",)  # Makes the 'view' field read-only
-    actions = ["mark_as_completed", "mark_as_pending"]  # Custom actions
+    date_hierarchy = "auction_start_date"
+    list_editable = ("status", "price")
+    readonly_fields = ("view",)
+    actions = ["mark_as_completed", "mark_as_pending"]
 
     def mark_as_completed(self, request, queryset):
         queryset.update(status='completed')
@@ -83,10 +83,10 @@ class BidAdmin(ImportExportModelAdmin):
     list_filter = ("auction__name", "user__full_name", "bid_time", "bid_amount")
     ordering = ("-bid_time", "bid_amount")
     search_fields = ("auction__name", "user__full_name", "bid_amount")
-    date_hierarchy = "bid_time"  # Adds a date-based navigation bar
-    list_editable = ("bid_amount",)  # Makes the bid_amount field editable directly in the list view
-    readonly_fields = ("id",)  # Makes the id field read-only
-    actions = ["mark_as_highlighted", "mark_as_regular"]  # Custom actions
+    date_hierarchy = "bid_time"
+    list_editable = ("bid_amount",)
+    readonly_fields = ("id",)
+    actions = ["mark_as_highlighted", "mark_as_regular"]
 
     def user_full_name(self, obj):
         return obj.user.get_full_name()
