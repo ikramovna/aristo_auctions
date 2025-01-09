@@ -112,12 +112,13 @@ class AuctionDetailSerializer(ModelSerializer):
         return images
 
     def get_bid_history(self, obj):
+        base_url = "https://aristoback.ikramovna.me"
         bids = obj.bids.all().order_by('-bid_time')
         return [
             {
                 "id": bid.id,
                 "user": bid.user.full_name,
-                "user_image": bid.user.image.url if bid.user.image else None,
+                "user_image": f"{base_url}{bid.user.image.url}" if bid.user.image else None,
                 "bid_time": f"Bid {timesince(bid.bid_time)} ago for {bid.bid_amount} $"
             } for bid in bids
         ]
