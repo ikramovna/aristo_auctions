@@ -86,8 +86,26 @@ pytest auction/tests/test_models.py
 ```
 
 
+
 # Author
 
 Zokirjonova Muslima 24835737
 ***
+
+
+## Project Overview
+
+This project is developed using Python and Django Rest Framework. It includes various functionalities such as database migrations, static file collection, and user management.
+
+### Admin Panel
+
+The Admin Panel allows users to manage auctions, bids, users, and categories. It includes features for creating, updating, and deleting records.
+
+***
+
+![admin.png](media/admin.png)
+
+***
+
+
 
